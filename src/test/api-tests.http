@@ -1,5 +1,5 @@
 ### Register a new User
-POST http://localhost:8081/api/auth/signup
+POST http://localhost:8082/api/auth/signup
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 > {% client.global.set("auth_email", "ojay@example.com"); %}
 
 ### Login to get JWT
-POST http://localhost:8081/api/auth/login
+POST http://localhost:8082/api/auth/login
 Content-Type: application/json
 
 {
@@ -23,28 +23,28 @@ Content-Type: application/json
 
 
 ### Create a New Task (Serious Tone)
-POST http://localhost:8081/api/tasks
+POST http://localhost:8082/api/tasks
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "title": "Complete Backend Testing",
+  "title": "Testing My application",
   "description": "Ensure all Gemini endpoints return 200 OK",
-  "reminderTime": "2026-03-12T16:05:00",
+  "reminderTime": "2026-03-13T12:28:00",
   "aiTone": "SERIOUS"
 }
 
 ### Get All My Tasks
-GET http://localhost:8081/api/tasks
+GET http://localhost:8082/api/tasks
 Authorization: Bearer {{auth_token}}
 
 
 ### Get Current Voice Settings
-GET http://localhost:8081/api/voice-settings
+GET http://localhost:8082/api/voice-settings
 Authorization: Bearer {{auth_token}}
 
 ### Update Voice to 'Kore' (Firm/Professional)
-POST http://localhost:8081/api/voice-settings
+POST http://localhost:8082/api/voice-settings
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 

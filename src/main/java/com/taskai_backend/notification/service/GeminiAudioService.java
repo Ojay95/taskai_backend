@@ -30,14 +30,17 @@ public class GeminiAudioService {
                 "generationConfig", Map.of(
                         "responseModalities", List.of("AUDIO"),
                         "speechConfig", Map.of(
-                                "voiceConfig", Map.of("prebuiltVoiceConfig", Map.of("voiceName", voiceName))
+                                "voiceConfig", Map.of(
+                                        "prebuiltVoiceConfig", Map.of("voiceName", voiceName)
+                                )
                         )
                 )
         );
 
         Map<String, Object> response = webClientBuilder.build()
                 .post()
-                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey)
+                // FIX: Ensure model name is "gemini-2.0-flash" or the latest stable version
+                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(Map.class)

@@ -1,7 +1,5 @@
 package com.taskai_backend.notification.scheduler;
 
-
-
 import com.taskai_backend.task.entity.Task;
 import com.taskai_backend.task.repository.TaskRepository;
 import com.taskai_backend.notification.service.GeminiAudioService;
@@ -10,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -24,38 +24,40 @@ public class ReminderJob {
     private final GeminiAudioService geminiService;
     private final AudioFileUtils audioUtils;
 
-    @Scheduled(cron = "0 * * * * *") // Runs at the start of every minute
+    @Scheduled(cron = "0 * * * * *")
+    @Transactional
     public void processMinuteReminders() {
-        // Define the window: from current minute :00 to :59
-        LocalDateTime startOfMinute = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        // Force the search window to UTC
+        LocalDateTime nowUtc = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime startOfMinute = nowUtc.truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime endOfMinute = startOfMinute.plusSeconds(59);
 
-        log.info("Checking for reminders between {} and {}", startOfMinute, endOfMinute);
+        log.info("Checking UTC window: {} to {}", startOfMinute, endOfMinute);
 
         List<Task> dueTasks = taskRepository.findByReminderTimeBetween(startOfMinute, endOfMinute);
+        log.info("Found {} tasks in UTC window.", dueTasks.size());
 
         for (Task task : dueTasks) {
             try {
-                // 1. Generate Native Audio via Gemini
                 byte[] audioData = geminiService.generateReminderAudio(
                         task.getUser().getFullName(),
                         task.getTitle(),
                         task.getDescription(),
                         task.getAiTone(),
-                        "Puck" // Default voice, can be pulled from VoicePersona
+                        "Puck"
                 );
 
-                // 2. Save and set URL
                 String url = audioUtils.saveAudioFile(audioData, "task_" + task.getId() + ".wav");
+
+                // Populate the missing columns
                 task.setVoiceFileUrl(url);
+                task.setGeneratedScript("AI " + task.getAiTone() + " reminder: " + task.getTitle());
 
                 taskRepository.save(task);
-                log.info("AI Voice generated for Task ID: {}", task.getId());
-
-                // TODO: Trigger your WebSocket/Push Notification here
+                log.info("Successfully updated Task ID: {}", task.getId());
 
             } catch (Exception e) {
-                log.error("Failed to process AI reminder for task {}: {}", task.getId(), e.getMessage());
+                log.error("Error processing task {}: {}", task.getId(), e.getMessage());
             }
         }
     }

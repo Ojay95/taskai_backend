@@ -19,7 +19,8 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(jwtSecret);
+        return io.jsonwebtoken.security.Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(String email) {
