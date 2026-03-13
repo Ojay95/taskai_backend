@@ -51,7 +51,7 @@ public class ReminderJob {
 
                 // Populate the missing columns
                 task.setVoiceFileUrl(url);
-                task.setGeneratedScript("AI " + task.getAiTone() + " reminder: " + task.getTitle());
+                task.setGeneratedScript("AI " + task.getAiTone() + " reminder for: " + task.getTitle());
 
                 taskRepository.save(task);
                 log.info("Successfully updated Task ID: {}", task.getId());

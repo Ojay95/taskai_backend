@@ -16,15 +16,14 @@ public class GeminiAudioService {
     @Value("${app.ai.gemini.api-key}")
     private String apiKey;
 
+    // src/main/java/com/taskai_backend/notification/service/GeminiAudioService.java
+
     public byte[] generateReminderAudio(String name, String taskTitle, String taskDesc, TaskTone tone, String voiceName) {
         String prompt = String.format(
-                "Address %s. Task: %s. Description: %s. Tone: %s. " +
-                        "If tone is SERIOUS, emphasize consequences of failure. " +
-                        "If GENTLE, provide warm motivation. Limit response to 20 words.",
+                "Address %s. Task: %s. Description: %s. Tone: %s. Limit to 20 words.",
                 name, taskTitle, taskDesc, tone
         );
 
-        // Gemini 2.5/3 API Native Audio Request
         Map<String, Object> request = Map.of(
                 "contents", List.of(Map.of("parts", List.of(Map.of("text", prompt)))),
                 "generationConfig", Map.of(
@@ -39,8 +38,8 @@ public class GeminiAudioService {
 
         Map<String, Object> response = webClientBuilder.build()
                 .post()
-                // FIX: Ensure model name is "gemini-2.0-flash" or the latest stable version
-                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey)
+                // FIX: Use gemini-1.5-flash or gemini-2.0-flash (ensure no '2.5' unless specifically available)
+                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(Map.class)
