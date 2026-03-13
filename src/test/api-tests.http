@@ -1,0 +1,53 @@
+### Register a new User
+POST http://localhost:8081/api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "ojay@example.com",
+  "password": "SecurePassword123",
+  "fullName": "Ojay Dev"
+}
+
+> {% client.global.set("auth_email", "ojay@example.com"); %}
+
+### Login to get JWT
+POST http://localhost:8081/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ojay@example.com",
+  "password": "SecurePassword123"
+}
+
+> {% client.global.set("auth_token", response.body.token); %}
+
+
+### Create a New Task (Serious Tone)
+POST http://localhost:8081/api/tasks
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "title": "Complete Backend Testing",
+  "description": "Ensure all Gemini endpoints return 200 OK",
+  "reminderTime": "2026-03-12T16:05:00",
+  "aiTone": "SERIOUS"
+}
+
+### Get All My Tasks
+GET http://localhost:8081/api/tasks
+Authorization: Bearer {{auth_token}}
+
+
+### Get Current Voice Settings
+GET http://localhost:8081/api/voice-settings
+Authorization: Bearer {{auth_token}}
+
+### Update Voice to 'Kore' (Firm/Professional)
+POST http://localhost:8081/api/voice-settings
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "voiceName": "Kore"
+}
