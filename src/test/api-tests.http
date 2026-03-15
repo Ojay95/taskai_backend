@@ -28,9 +28,9 @@ Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "title": "Testing My application 2",
+  "title": "Testing My application 4",
   "description": "Ensure all Gemini endpoints return 200 OK",
-  "reminderTime": "2026-03-13T14:14:00",
+  "reminderTime": "2026-03-14T23:00:00",
   "aiTone": "SERIOUS"
 }
 

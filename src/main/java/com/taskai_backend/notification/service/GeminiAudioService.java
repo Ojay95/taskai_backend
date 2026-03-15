@@ -38,13 +38,10 @@ public class GeminiAudioService {
 
         Map<String, Object> response = webClientBuilder.build()
                 .post()
-                // FIX: Use gemini-1.5-flash or gemini-2.0-flash (ensure no '2.5' unless specifically available)
-                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey)
-                .bodyValue(request)
+                .uri("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey)                .bodyValue(request)
                 .retrieve()
                 .bodyToMono(Map.class)
                 .block();
-
         return extractAudioBytes(response);
     }
 
